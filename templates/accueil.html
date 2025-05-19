@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HL-SmartAgr. - Analyse de serre en temps réel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo animate">
+                <i class="fas fa-seedling"></i>
+                <span>HL-SmartAgr.</span>
+            </div>
+            <nav>
+                <ul>
+                    <li class="animate delay-1"><a href="#features">Fonctionnalités</a></li>
+                    <li class="animate delay-2"><a href="{{ url_for('auth') }}">Tableau de bord</a></li>
+                    <li class="animate delay-3"><a href="#pricing">Abonnements</a></li>
+                    <li class="animate delay-4"><a href="{{ url_for('contact') }}">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="animate">Optimisez votre serre agricole avec des données intelligentes</h1>
+            <p class="animate delay-1">Surveillance en temps réel, alertes intelligentes et analyses avancées pour maximiser votre rendement.</p>
+            <div class="animate delay-2">
+                <a href="../Sign up/index.html" class="cta-button">Essayer la démo</a>
+                <a href="#features" class="cta-button secondary-button">En savoir plus</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-title animate">
+            <h2>Fonctionnalités Clés</h2>
+            <p>Découvrez ce que notre plateforme peut faire pour vous <br><br></p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card animate delay-1">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Visualisation en temps réel</h3>
+                <p>Graphiques dynamiques et tableaux de bord personnalisables pour suivre tous les paramètres de votre serre.<br><br></p>
+            </div>
+            <div class="feature-card animate delay-2">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3>Alertes intelligentes</h3>
+                <p>Configurations personnalisées des seuils d'alerte avec notifications visuelles et suggestions d'actions.<br><br></p>
+            </div>
+            <div class="feature-card animate delay-3">
+                <div class="feature-icon">
+                    <i class="fas fa-file-export"></i>
+                </div>
+                <h3>Export de rapports</h3>
+                <p>Générez des rapports détaillés au format Excel ou PDF pour un suivi approfondi et des analyses complètes.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-preview" id="dashboard">
+        <div class="dashboard-container">
+            <div class="section-title animate" style="color: white;">
+                <h2>Tableau de Bord Intuitif</h2>
+                <p>Une interface claire et complète pour une prise de décision éclairée <br><br></p>
+            </div>
+            <img src="../static/images/Interface.png" alt="Tableau de bord AgriDataVision" class="dashboard-image animate delay-1">
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <div class="section-title animate">
+            <h2>Choisissez Votre Abonnement</h2>
+            <p>Des formules adaptées à tous les besoins agricoles<br><br></p>
+        </div>
+        <div class="pricing-grid">
+            <!-- Abonnement Mensuel -->
+            <div class="pricing-card animate delay-1">
+                <div class="pricing-header">
+                    <h3>Mensuel</h3>
+                    <div class="price">
+                        <span class="amount">99€</span>
+                        <span class="period">/mois</span>
+                    </div>
+                    <p>Flexibilité maximale</p>
+                </div>
+                <div class="pricing-features">
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Accès complet aux données temps réel</li>
+                        <li><i class="fas fa-check-circle"></i> 3 alertes personnalisées</li>
+                        <li><i class="fas fa-check-circle"></i> Export Excel des données</li>
+                        <li><i class="fas fa-check-circle"></i> Support technique de base</li>
+                        <li><i class="fas fa-times-circle"></i> Historique limité à 15 jours</li>
+                    </ul>
+                </div>
+                <a href="./contact.html" class="pricing-button">Essayer maintenant</a>
+                <div class="popular-tag">Parfait pour essayer</div>
+            </div>
+    
+            <!-- Abonnement Trimestriel (le plus populaire) -->
+            <div class="pricing-card popular animate delay-2">
+                <div class="pricing-header">
+                    <h3>Trimestriel</h3>
+                    <div class="price">
+                        <span class="amount">249€</span>
+                        <span class="period">/3 mois</span>
+                    </div>
+                    <p>Économisez 16%</p>
+                </div>
+                <div class="pricing-features">
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Tout l'abonnement Mensuel</li>
+                        <li><i class="fas fa-check-circle"></i> 10 alertes personnalisées</li>
+                        <li><i class="fas fa-check-circle"></i> Export PDF et Excel</li>
+                        <li><i class="fas fa-check-circle"></i> Support technique prioritaire</li>
+                        <li><i class="fas fa-check-circle"></i> Historique de 3 mois</li>
+                        <li><i class="fas fa-check-circle"></i> 1 rapport analytique/mois</li>
+                    </ul>
+                </div>
+                <a href="./contact.html" class="pricing-button">S'abonner</a>
+                <div class="popular-tag">Choix populaire</div>
+            </div>
+    
+            <!-- Abonnement Annuel -->
+            <div class="pricing-card animate delay-3">
+                <div class="pricing-header">
+                    <h3>Annuel</h3>
+                    <div class="price">
+                        <span class="amount">899€</span>
+                        <span class="period">/an</span>
+                    </div>
+                    <p>Économisez 25%</p>
+                </div>
+                <div class="pricing-features">
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Tout l'abonnement Trimestriel</li>
+                        <li><i class="fas fa-check-circle"></i> Alertes illimitées</li>
+                        <li><i class="fas fa-check-circle"></i> Rapports analytiques hebdomadaires</li>
+                        <li><i class="fas fa-check-circle"></i> Support premium 24/7</li>
+                        <li><i class="fas fa-check-circle"></i> Historique complet (1 an)</li>
+                        <li><i class="fas fa-check-circle"></i> 2 consultations expert annuelles</li>
+                    </ul>
+                </div>
+                <a href="./contact.html" class="pricing-button">S'abonner</a>
+                <div class="popular-tag">Meilleure valeur</div>
+            </div>
+        </div>
+        <div class="pricing-footer animate delay-4">
+            <p>Tous nos abonnements incluent les mises à jour automatiques et la sécurité des données.</p>
+            <p>Besoin d'une solution personnalisée ? <a href="./contact.html">Contactez-nous</a></p>
+        </div>
+    </section>
+    
+
+
+    <section class="cta-section">
+        <h2 class="animate">Prêt à optimiser votre serre agricole ?</h2>
+        <p class="animate delay-1">Découvrez comment AgriDataVision peut transformer votre production grâce à l'analyse de données en temps réel.</p>
+        <a href="./contact.html" class="cta-button animate delay-2" style="background-color: white; color: var(--primary);">Nous contacter</a>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>HL-Smart Agr.</h3>
+                <p>La solution ultime pour la surveillance et l'analyse des serres agricoles en temps réel.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Liens rapides</h3>
+                <ul>
+                    <li><a href="#features">Fonctionnalités</a></li>
+                    <li><a href="#dashboard">Tableau de bord</a></li>
+                    <li><a href="#pricing">Abonnements</a></li>
+                    <li><a href="../Sign up/index.html">Démo</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> mnlouchi@gmail.com</li>
+                    <li><i class="fas fa-phone"></i> +212 6 64 87 86 04</li>
+                    <li><i class="fas fa-map-marker-alt"></i> EMSI, Maroc</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 HL-SmartAgr. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

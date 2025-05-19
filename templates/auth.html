@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentification</title>
+  <link rel="stylesheet" type="text/css" href="../static/signup.css">
+  <link rel="stylesheet" href="../static/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header>
+      <div class="header-content">
+          <div class="logo animate">
+              <i class="fas fa-seedling"></i>
+              <span>HL-SmartAgr.</span>
+          </div>
+        <nav>
+            <ul>
+                <li class="animate delay-1"><a href="{{ url_for('accueil') }}">Accueil</a></li>
+                <li class="animate delay-4"><a href="{{ url_for('contact') }}">Contact</a></li>
+            </ul>
+        </nav>
+      </div>
+  </header>
+
+  <!-- Affichage des messages flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Contenu centré -->
+  <div class="content-wrapper">
+    <!-- Formulaires -->
+    <div class="main">  	
+      <input type="checkbox" id="chk" aria-hidden="true">
+
+      <div class="signup">
+        <form method="POST" action="/">
+          <label for="chk" aria-hidden="true">Inscription</label>
+          <input type="text" name="txt" placeholder="Nom d'utilisateur" required>
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="tel" name="num" placeholder="Téléphone" required>
+          <input type="text" name="adresse" placeholder="Adresse" required>
+          <input type="password" name="pswd" placeholder="Mot de passe" required>
+          <button type="submit" class="login-link">S'inscrire</button>
+        </form>
+      </div>
+
+      <div class="login">
+        <form method="POST" action="/">
+          <label for="chk" aria-hidden="true">Connexion</label>
+          <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+          <input type="password" name="pswd" placeholder="Mot de passe" required>
+          <button type="submit" class="login-link">Se connecter</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Gestion de l'affichage des messages flash
+    document.addEventListener('DOMContentLoaded', function() {
+      const flashMessages = document.querySelectorAll('.flash-messages div');
+      flashMessages.forEach(msg => {
+        setTimeout(() => {
+          msg.style.opacity = '0';
+          setTimeout(() => msg.remove(), 500);
+        }, 3000);
+      });
+    });
+  </script>
+</body>
+</html>

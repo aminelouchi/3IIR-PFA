@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-left">
+          <button class="close-menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="app-logo">
+            <svg href="./images/MOI.jpg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>       </svg>
+            <span>Louchi Haddaq</span>
+          </div>
+          <ul class="nav-list">
+            <li class="nav-list-item active">
+              <a class="nav-list-link" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-columns"><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"/></svg>
+                Tableau de bord
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="{{ url_for('profil') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Profil
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="{{ url_for('security') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                Sécurité
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="{{ url_for('serres') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Mes serres
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                Rapport
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="{{ url_for('auth') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Déconnexion
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="app-main">
+          <div class="main-header-line">
+            <h1>Applications Dashboard</h1>
+            <div class="action-buttons">
+              <button class="open-right-area">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </button>
+            <button class="menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            </div>
+          </div>
+          <h2 class="live-title">Serre en direct <span class="live-dot"></span> </h2>
+          <div class="chart-row three">
+
+            <div class="chart-container-wrapper">
+              <div class="chart-container" id="temperature" {% if alertes.temperature %}clignoter...{% endif %}>
+                <div class="chart-info-wrapper">
+                  <h2>Température</h2>
+                  <span id="temperature-value">{{ live_data.temperature.value }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container-wrapper">
+              <div class="chart-container" id="luminosite" {% if alertes.luminosite %}clignoter...{% endif %}>
+                <div class="chart-info-wrapper">
+                  <h2>Luminosité</h2>
+                  <span id="luminosite-value">{{ live_data.luminosite.value }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container-wrapper">
+              <div class="chart-container" id="humidite_sol" {% if alertes.humidite_sol %}clignoter...{% endif %}>
+                <div class="chart-info-wrapper">
+                  <h2>Humidité du sol</h2>
+                  <span id="humidite_sol-value">{{ live_data.humidite_sol.value }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="chart-container-wrapper">
+              <div class="chart-container" id="humidite_air" {% if alertes.humidite_air %}clignoter...{% endif %}>
+                <div class="chart-info-wrapper">
+                  <h2>Humidité de l'air</h2>
+                  <span id="humidite_air-value">{{ live_data.humidite_air.value }}</span>
+                </div>
+              </div>
+            </div>
+          
+
+          <div class="chart-container-wrapper">
+            <div class="chart-container" id="co2" {% if alertes.co2 %}clignoter...{% endif %}>
+              <div class="chart-info-wrapper">
+                <h2>CO2</h2>
+                <span id="co2-value">{{ live_data.co2.value }}</span>
+              </div>
+            </div>
+          </div>
+
+          <style>
+            .alert-blink {
+              animation: blink 1s infinite;
+              border: 2px solid red;
+            }
+          
+            @keyframes blink {
+              0%, 100% { background-color: transparent; }
+              50% { background-color: rgba(255, 0, 0, 0.2); }
+            }
+          </style>
+          
+
+          <div class="chart-container-wrapper">
+            <div class="chart-container">
+              <div class="chart-info-wrapper">
+                <h2>Arrosage</h2>
+                <span id="arrosage-value">{{ live_data.arrosage.value }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container-wrapper">
+            <div class="chart-container">
+              <div class="chart-info-wrapper">
+                <h2>Fertilisation</h2>
+                <span id="fertilisation-value">{{ live_data.fertilisation.value }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="message-title">Notifications de Serre<span class="message-dot"></span> </h2> 
+        <section id="messages">
+          <div class="message notification-high">
+              <p><strong>Notification 1 :</strong> La température a dépassé le seuil critique de 30°C !</p>
+              <p>Solution : Activez le système de refroidissement et augmentez l'aération de la serre.</p>
+          </div>
+          <div class="message notification-high">
+              <p><strong>Notification 2 :</strong> L'humidité est tombée en dessous du seuil minimal de 40% !</p>
+              <p>Solution : Vérifiez les systèmes d'irrigation et augmentez l'humidification de l'air.</p>
+          </div>
+          <div class="message notification-low">
+              <p><strong>Notification 3 :</strong> La température de la serre a chuté sous 15°C.</p>
+              <p>Solution : Activez le chauffage pour maintenir une température stable.</p>
+          </div>
+          <div class="message notification-high">
+              <p><strong>Notification 4 :</strong> L'oxygénation est insuffisante, le seuil de 20% est dépassé.</p>
+              <p>Solution : Augmentez l'aération en ouvrant les fenêtres ou en activant un système d'oxygénation supplémentaire.</p>
+          </div>
+        </section>
+      
+      <h2 class="etat-title">État de la serre <span class="live-dot"></span></h2> 
+        <section class="serre-section">
+          <p class="serre-description">
+            La serre maintient actuellement des conditions optimales pour la croissance des plantes. La température est stable autour de 22°C, l’humidité du sol est bien régulée, et les niveaux de CO₂ ainsi que la luminosité sont dans les plages idéales. Aucun arrosage ou fertilisation n'est actuellement requis. La surveillance continue permet d’assurer un environnement sain et contrôlé.
+          </p>
+        </section>
+
+
+        <h2 class="historique-title">Historique de la serre</h2> 
+        <div class="chart-data-table" style="width: 100%; margin-top: 24px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #ffffff;">
+            <thead style="background-color: rgba(255, 255, 255, 0.1);">
+              <tr>
+                <th style="padding: 10px; border: 1px solid rgba(255,255,255,0.2);">Température</th>
+                <th style="padding: 10px; border: 1px solid rgba(255,255,255,0.2);">Humidité du sol</th>
+                <th style="padding: 10px; border: 1px solid rgba(255,255,255,0.2);">Humidité de l'air</th>
+                <th style="padding: 10px; border: 1px solid rgba(255,255,255,0.2);">CO₂</th>
+                <th style="padding: 10px; border: 1px solid rgba(255,255,255,0.2);">Luminosité</th>
+                <th style="padding: 10px; border: 1px solid rgba(255,255,255,0.2);">Arrosage</th>
+                <th style="padding: 10px; border: 1px solid rgba(255,255,255,0.2);">Fertilisation</th>
+              </tr>
+            </thead>
+            <tbody id="historique-body">
+                <!-- Rempli dynamiquement -->
+            </tbody>
+          </table>
+        </div>
+
+
+        <h2 class="graph-title">Représentations graphiques</h2> 
+        <div class="graphe-row">
+          <div class="graphe-box">
+            <h2 class="graphe-title">Température</h2>
+            <canvas id="tempChart"></canvas>
+          </div>
+          <div class="graphe-box">
+            <h2 class="graphe-title">Humidité du sol</h2>
+            <canvas id="soilChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="graphe-row">
+          <div class="graphe-box">
+            <h2 class="graphe-title">Humidité de l'air</h2>
+            <canvas id="airChart"></canvas>
+          </div>
+          <div class="graphe-box">
+            <h2 class="graphe-title">CO₂</h2>
+            <canvas id="co2Chart"></canvas>
+          </div>
+        </div>
+        
+        <div class="graphe-row">
+          <div class="graphe-box">
+            <h2 class="graphe-title">Luminosité</h2>
+            <canvas id="lightChart"></canvas>
+          </div>
+        </div>
+        
+        <h2 class="alerts-title">Dernières alertes enregistrées</h2>
+        <div class="chart-row three">
+          <div class="chart-container-wrapper">
+            <div class="chart-container">
+              <div class="chart-info-wrapper">
+                <h2>Température</h2>
+                <span>20.5 K</span>
+              </div>
+              <div class="chart-svg">
+                <svg viewBox="0 0 36 36" class="circular-chart pink">
+          <path class="circle-bg" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+          <path class="circle" stroke-dasharray="30, 100" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+          <text x="18" y="20.35" class="percentage">30%</text>
+        </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container-wrapper">
+            <div class="chart-container">
+              <div class="chart-info-wrapper">
+                <h2>Luminosité</h2>
+                <span>20.5 K</span>
+              </div>
+              <div class="chart-svg">
+                <svg viewBox="0 0 36 36" class="circular-chart pink">
+          <path class="circle-bg" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+          <path class="circle" stroke-dasharray="30, 100" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+          <text x="18" y="20.35" class="percentage">30%</text>
+        </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container-wrapper">
+            <div class="chart-container">
+              <div class="chart-info-wrapper">
+                <h2>Humidité du sol</h2>
+                <span>5.5 K</span>
+              </div>
+              <div class="chart-svg">
+                <svg viewBox="0 0 36 36" class="circular-chart blue">
+          <path class="circle-bg" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+          <path class="circle" stroke-dasharray="60, 100" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+          <text x="18" y="20.35" class="percentage">60%</text>
+        </svg>
+              </div>
+            </div>
+          </div>
+          <div class="chart-container-wrapper">
+            <div class="chart-container">
+              <div class="chart-info-wrapper">
+                <h2>Humidité de l'air</h2>
+                <span>10.5 K</span>
+              </div>
+               <div class="chart-svg">
+                <svg viewBox="0 0 36 36" class="circular-chart orange">
+          <path class="circle-bg" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+          <path class="circle" stroke-dasharray="90, 100" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+          <text x="18" y="20.35" class="percentage">90%</text>
+        </svg>
+              </div>
+            </div>
+          </div>
+        
+
+        <div class="chart-container-wrapper">
+          <div class="chart-container">
+            <div class="chart-info-wrapper">
+              <h2>CO2</h2>
+              <span>20.5 K</span>
+            </div>
+            <div class="chart-svg">
+              <svg viewBox="0 0 36 36" class="circular-chart pink">
+        <path class="circle-bg" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <path class="circle" stroke-dasharray="30, 100" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <text x="18" y="20.35" class="percentage">30%</text>
+      </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="moyennes-title">Moyennes (4 heures)</h2>
+      <div class="chart-row three">
+        <div class="chart-container-wrapper">
+          <div class="chart-container">
+            <div class="chart-info-wrapper">
+              <h2>Température</h2>
+              <span>20.5 K</span>
+            </div>
+            <div class="chart-svg">
+              <svg viewBox="0 0 36 36" class="circular-chart pink">
+        <path class="circle-bg" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <path class="circle" stroke-dasharray="30, 100" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <text x="18" y="20.35" class="percentage">30%</text>
+      </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-container-wrapper">
+          <div class="chart-container">
+            <div class="chart-info-wrapper">
+              <h2>Luminosité</h2>
+              <span>20.5 K</span>
+            </div>
+            <div class="chart-svg">
+              <svg viewBox="0 0 36 36" class="circular-chart pink">
+        <path class="circle-bg" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <path class="circle" stroke-dasharray="30, 100" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <text x="18" y="20.35" class="percentage">30%</text>
+      </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-container-wrapper">
+          <div class="chart-container">
+            <div class="chart-info-wrapper">
+              <h2>Humidité du sol</h2>
+              <span>5.5 K</span>
+            </div>
+            <div class="chart-svg">
+              <svg viewBox="0 0 36 36" class="circular-chart blue">
+        <path class="circle-bg" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <path class="circle" stroke-dasharray="60, 100" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <text x="18" y="20.35" class="percentage">60%</text>
+      </svg>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container-wrapper">
+          <div class="chart-container">
+            <div class="chart-info-wrapper">
+              <h2>Humidité de l'air</h2>
+              <span>10.5 K</span>
+            </div>
+             <div class="chart-svg">
+              <svg viewBox="0 0 36 36" class="circular-chart orange">
+        <path class="circle-bg" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <path class="circle" stroke-dasharray="90, 100" d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        <text x="18" y="20.35" class="percentage">90%</text>
+      </svg>
+            </div>
+          </div>
+        </div>
+      
+
+      <div class="chart-container-wrapper">
+        <div class="chart-container">
+          <div class="chart-info-wrapper">
+            <h2>CO2</h2>
+            <span>20.5 K</span>
+          </div>
+          <div class="chart-svg">
+            <svg viewBox="0 0 36 36" class="circular-chart pink">
+      <path class="circle-bg" d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+      <path class="circle" stroke-dasharray="30, 100" d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+      <text x="18" y="20.35" class="percentage">30%</text>
+    </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+        
+      <script src="../static/js/dashboard.js"></script>
+</body>
+</html>
