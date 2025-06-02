@@ -123,6 +123,17 @@ class Notification(db.Model):
     solution = db.Column(db.String(255))
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
 
+class DerniereAlerte(db.Model):
+    __tablename__ = 'DernieresAlertes'
+    id = db.Column(db.Integer, primary_key=True)
+    serre_id = db.Column(db.Integer, nullable=False)
+    type = db.Column(db.String(50))
+    valeur = db.Column(db.Float)
+    pourcentage = db.Column(db.Float)
+    seuil_min = db.Column(db.Float)
+    seuil_max = db.Column(db.Float)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+
 class ExcelFileHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path.endswith(EXCEL_FILE):
@@ -503,19 +514,17 @@ def read_excel_data():
 
         for key, column_name in correspondances.items():
             if column_name in df.columns:
-                # Correction des valeurs (diviser par 100 si nécessaire)
                 raw_value = df[column_name].iloc[-1]
                 value = float(raw_value)
-                
-                # Ajustements spécifiques
+
                 if key == 'temperature':
-                    value = value / 100  # Si la température est en centièmes
+                    value = value / 100
                 elif key in ['humidite_sol', 'humidite_air']:
-                    value = value / 100  # Si l'humidité est en pourcentage * 100
-                
+                    value = value / 100
+
                 live_data[key]['value'] = value
-                live_data[key]['percent'] = value  # Ou calculer un pourcentage approprié
-                
+                live_data[key]['percent'] = value
+
                 print(f"{key}: {value} (valeur brute: {raw_value})")
             else:
                 print(f"⚠️ Colonne manquante: {column_name}")
@@ -523,6 +532,7 @@ def read_excel_data():
     except Exception as e:
         print(f"❌ Erreur lors de la lecture du fichier Excel: {str(e)}")
         traceback.print_exc()
+        return  # Stop here in case of read error
 
     # Après avoir mis à jour live_data
     valeurs = {
@@ -533,15 +543,18 @@ def read_excel_data():
         "Luminosité": live_data['luminosite']['value']
     }
 
-    serre = Serre.query.filter_by(id_user=session.get('user_id')).first()
-    if serre:
-        manage_notification(session['user_id'], "Température", valeurs["Température"], serre.temperature_min, serre.temperature_max)
-        manage_notification(session['user_id'], "Humidité du sol", valeurs["Humidité du sol"], serre.humidite_sol_min, serre.humidite_sol_max)
-        manage_notification(session['user_id'], "Humidité air", valeurs["Humidité air"], serre.humidite_air_min, serre.humidite_air_max)
-        manage_notification(session['user_id'], "CO2", valeurs["CO2"], serre.co2_min, serre.co2_max)
-        manage_notification(session['user_id'], "Luminosité", valeurs["Luminosité"], serre.luminosite_min, serre.luminosite_max)
+    # Récupérer la serre de l'utilisateur actif si connecté
+    if 'user_id' in session:
+        serre = Serre.query.filter_by(id_user=session['user_id']).first()
+        if serre:
+            user_id = serre.id_user
+            serre_id = serre.id_serre
 
-
+            manage_notification(user_id, serre_id, "Température", valeurs["Température"], serre.temperature_min, serre.temperature_max)
+            manage_notification(user_id, serre_id, "Humidité sol", valeurs["Humidité du sol"], serre.humidite_sol_min, serre.humidite_sol_max)
+            manage_notification(user_id, serre_id, "Humidité air", valeurs["Humidité air"], serre.humidite_air_min, serre.humidite_air_max)
+            manage_notification(user_id, serre_id, "CO2", valeurs["CO2"], serre.co2_min, serre.co2_max)
+            manage_notification(user_id, serre_id, "Luminosité", valeurs["Luminosité"], serre.luminosite_min, serre.luminosite_max)
 
 # Route de base pour le dashboard - MODIFIÉ
 @app.route('/dashboard')
@@ -605,7 +618,7 @@ def update_data():
                 print(f"Erreur dans update_data: {str(e)}")
                 time.sleep(5)
 
-def manage_notification(user_id, param, value, min_val, max_val):
+def manage_notification(user_id, serre_id, param, value, min_val, max_val):
     seuil = None
     if value < min_val:
         seuil = "min"
@@ -613,26 +626,42 @@ def manage_notification(user_id, param, value, min_val, max_val):
         seuil = "max"
 
     if seuil:
-        existing = Notification.query.filter_by(user_id=user_id, type=param, seuil=seuil).first()
-        if not existing:
+        # Calcul du pourcentage de dépassement
+        percent = 0
+        if max_val != min_val:
+            percent = (value - min_val) / (max_val - min_val) * 100
+
+        # Enregistrement ou mise à jour dans DernieresAlertes (lié à la serre)
+        existing_alert = DerniereAlerte.query.filter_by(serre_id=serre_id, type=param).first()
+        if existing_alert:
+            existing_alert.valeur = value
+            existing_alert.pourcentage = percent
+            existing_alert.seuil_min = min_val
+            existing_alert.seuil_max = max_val
+            existing_alert.timestamp = datetime.utcnow()
+        else:
+            new_alert = DerniereAlerte(
+                serre_id=serre_id,
+                type=param,
+                valeur=value,
+                pourcentage=percent,
+                seuil_min=min_val,
+                seuil_max=max_val
+            )
+            db.session.add(new_alert)
+
+        # Crée une notification uniquement si pas encore enregistrée
+        existing_notif = Notification.query.filter_by(user_id=user_id, type=param, seuil=seuil).first()
+        if not existing_notif:
             solutions = {
-                # 🔥 Température
                 ("Température", "max"): "Activez le système de refroidissement et augmentez l'aération.",
                 ("Température", "min"): "Activez le chauffage pour maintenir une température stable.",
-
-                # 💧 Humidité de l'air
                 ("Humidité air", "max"): "Réduisez l'humidification ou augmentez la ventilation.",
                 ("Humidité air", "min"): "Vérifiez les systèmes d'humidification de l'air.",
-
-                # 🌱 Humidité du sol
                 ("Humidité du sol", "max"): "Réduisez la fréquence ou la durée d’arrosage automatique.",
                 ("Humidité du sol", "min"): "Vérifiez les systèmes d'irrigation et arrosez manuellement si nécessaire.",
-
-                # 🧪 CO2
                 ("CO2", "max"): "Augmentez l’aération ou ouvrez les fenêtres pour évacuer le CO₂.",
                 ("CO2", "min"): "Assurez-vous que les systèmes d'enrichissement en CO₂ fonctionnent correctement.",
-
-                # ☀️ Luminosité
                 ("Luminosité", "max"): "Utilisez des filets d’ombrage ou réduisez l’exposition directe au soleil.",
                 ("Luminosité", "min"): "Allumez les lampes de culture ou améliorez l’éclairage naturel."
             }
@@ -648,7 +677,7 @@ def manage_notification(user_id, param, value, min_val, max_val):
                 solution=sol
             )
             db.session.add(notif)
-            db.session.commit()
+
             user = User.query.get(user_id)
             if user and user.email:
                 send_email_notification(
@@ -658,10 +687,31 @@ def manage_notification(user_id, param, value, min_val, max_val):
                     solution=sol
                 )
 
-    else:
-        # Supprimer les alertes existantes si le seuil est normalisé
-        Notification.query.filter_by(user_id=user_id, type=param).delete()
         db.session.commit()
+
+    else:
+        # Suppression si retour à la normale
+        Notification.query.filter_by(user_id=user_id, type=param).delete()
+        DerniereAlerte.query.filter_by(serre_id=serre_id, type=param).delete()
+        db.session.commit()
+
+@app.route('/dernieres_alertes')
+def get_dernieres_alertes():
+    if 'user_id' not in session:
+        return jsonify([])
+
+    serre = Serre.query.filter_by(id_user=session['user_id']).first()
+    if not serre:
+        return jsonify([])
+
+    alertes = DerniereAlerte.query.filter_by(serre_id=serre.id_serre).all()
+    return jsonify([
+        {
+            'type': a.type,
+            'valeur': round(a.valeur, 2),
+            'pourcentage': round(a.pourcentage, 1)
+        } for a in alertes
+    ])
 
 
 # Lancement de la mise à jour en temps réel dans un thread séparé

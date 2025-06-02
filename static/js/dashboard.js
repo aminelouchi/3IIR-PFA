@@ -147,3 +147,20 @@ function fetchGraphData() {
 }
 
 fetchGraphData();
+
+function chargerDernieresAlertes() {
+    fetch("/dernieres_alertes")
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(alert => {
+                const id = `alerts-${alert.type.toLowerCase().replace(/\s/g, '_')}`;
+                const span = document.getElementById(id);
+                if (span) {
+                    span.textContent = `${alert.valeur} (${alert.pourcentage}%)`;
+                }
+            });
+        })
+        .catch(error => console.error("Erreur lors du chargement des alertes :", error));
+}
+
+document.addEventListener("DOMContentLoaded", chargerDernieresAlertes);
