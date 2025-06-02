@@ -19,7 +19,8 @@
             <svg href="./images/MOI.jpg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2">
               <line x1="18" y1="20" x2="18" y2="10"/>
               <line x1="12" y1="20" x2="12" y2="4"/>
-              <line x1="6" y1="20" x2="6" y2="14"/>       </svg>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
             <span>Louchi Haddaq</span>
           </div>
           <ul class="nav-list">
@@ -66,20 +67,6 @@
         
         <div class="auth-method">
             <div class="d-flex align-items-center">
-                <div class="auth-icon"><i class="fas fa-mobile-alt"></i></div>
-                <div class="ms-3">
-                    <h5 class="mb-1">Authentification par téléphone</h5>
-                    <p class="text-grey mb-0">Notification push sur votre appareil</p>
-                </div>
-            </div>
-            <label class="toggle-switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="auth-method">
-            <div class="d-flex align-items-center">
                 <div class="auth-icon"><i class="fas fa-fingerprint"></i></div>
                 <div class="ms-3">
                     <h5 class="mb-1">Empreinte digitale</h5>
@@ -105,47 +92,6 @@
                 <span class="slider"></span>
             </label>
         </div>
-        
-        <div class="auth-method">
-            <div class="d-flex align-items-center">
-                <div class="auth-icon"><i class="fas fa-envelope"></i></div>
-                <div class="ms-3">
-                    <h5 class="mb-1">Code par email</h5>
-                    <p class="text-grey mb-0">Recevez un code de vérification par email</p>
-                </div>
-            </div>
-            <label class="toggle-switch">
-                <input type="checkbox">
-                <span class="slider"></span>
-            </label>
-        </div>
-    </div>
-
-    <!-- Modal pour ajouter Face ID -->
-    <div class="modal fade" id="faceIdModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Configurer Face ID</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-face-id" style="font-size: 60px; color: #573b8a;"></i>
-                    </div>
-                    <p>Positionnez votre visage dans le cadre pour enregistrer votre Face ID.</p>
-                    <div class="face-scan-placeholder mb-3" style="width: 200px; height: 200px; border: 2px dashed #ccc; margin: 0 auto;"></div>
-                    <div class="progress mb-3">
-                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" id="saveFaceId">Enregistrer</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="{{ url_for('static', filename='js/security.js') }}"></script>
 </body>
