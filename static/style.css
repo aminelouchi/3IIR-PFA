@@ -991,3 +991,53 @@ button {
 strong {
   font-weight: bold;
 }
+
+.select-serre-form {
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+  align-items: center;
+  text-align: center;
+}
+
+.select-serre-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #d3c900;
+}
+
+#serre-select {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+}
+
+#serre-select:hover {
+  border-color: #aaa;
+}
+
+#serre-select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Style des options */
+#serre-select option {
+  padding: 10px;
+  background-color: #fff;
+  color: #333;
+}
+
+/* Style pour l'option sélectionnée */
+#serre-select option:checked {
+  background-color: #4CAF50;
+  color: white;
+}

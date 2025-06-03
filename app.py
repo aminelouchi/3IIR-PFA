@@ -17,6 +17,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
+from datetime import datetime, timezone
+
+now = datetime.now(timezone.utc)
 
 
 app = Flask(__name__)
@@ -93,6 +96,7 @@ class Serre(db.Model):
     superficie = db.Column(db.Numeric(10, 2), nullable=False)  # Changé pour DECIMAL(10,2)
     adresse = db.Column(db.String(255), nullable=False)
     ville = db.Column(db.String(100), nullable=False)
+    excel_path = db.Column(db.String(255), nullable=False)
     temperature_min = db.Column(db.Numeric(5, 2), nullable=False)
     temperature_max = db.Column(db.Numeric(5, 2), nullable=False)
     luminosite_min = db.Column(db.Integer, nullable=False)
@@ -155,47 +159,48 @@ def latest_data():
     if 'user_id' not in session:
         return jsonify({"error": "Non connecté"}), 403
 
-    try:
-        user_id = session['user_id']
-        serre = Serre.query.filter_by(id_user=user_id).first()
-        if not serre:
-            return jsonify({"error": "Aucune serre trouvée"}), 404
+    serre_id = request.args.get('serre_id', type=int)
+    if not serre_id:
+        serre = Serre.query.filter_by(id_user=session['user_id']).first()
+    else:
+        serre = Serre.query.filter_by(id_user=session['user_id'], id_serre=serre_id).first()
 
-        df = pd.read_excel(EXCEL_FILE)
-        df = df.dropna(how="all").reset_index(drop=True)
-        last = df.iloc[-1]
+    if not serre:
+        return jsonify({"error": "Serre non trouvée"}), 404
 
-        valeurs = {
-            "Température": float(last.get("Température", 0) or 0),
-            "Humidité du sol": float(last.get("Humidité du sol", 0) or 0),
-            "Humidité air": float(last.get("Humidité air", 0) or 0),
-            "CO2": float(last.get("CO2", 0) or 0),
-            "Luminosité": float(last.get("Luminosité", 0) or 0),
-            "Arrosage": float(last.get("Arrosage", 0) or 0),
-            "Fertilisation": float(last.get("Fertilisation", 0) or 0)
-        }
+    # lecture live
+    data = live_data.get(serre.id_serre)
+    if not data:
+        return jsonify({"error": "Pas de données disponibles"}), 404
 
-        alertes = {
-            "Température": not (serre.temperature_min <= valeurs["Température"] <= serre.temperature_max),
-            "Humidité du sol": not (serre.humidite_sol_min <= valeurs["Humidité du sol"] <= serre.humidite_sol_max),
-            "Humidité air": not (serre.humidite_air_min <= valeurs["Humidité air"] <= serre.humidite_air_max),
-            "CO2": not (serre.co2_min <= valeurs["CO2"] <= serre.co2_max),
-            "Luminosité": not (serre.luminosite_min <= valeurs["Luminosité"] <= serre.luminosite_max),
-        }
+    valeurs = {
+        "Température": data['temperature']['value'],
+        "Humidité du sol": data['humidite_sol']['value'],
+        "Humidité air": data['humidite_air']['value'],
+        "CO2": data['co2']['value'],
+        "Luminosité": data['luminosite']['value'],
+        "Arrosage": data['arrosage']['value'],
+        "Fertilisation": data['fertilisation']['value'],
+    }
 
-        return jsonify({
-            "valeurs": valeurs,
-            "alertes": alertes
-        })
+    alertes = {
+        "Température": not (serre.temperature_min <= valeurs["Température"] <= serre.temperature_max),
+        "Humidité du sol": not (serre.humidite_sol_min <= valeurs["Humidité du sol"] <= serre.humidite_sol_max),
+        "Humidité air": not (serre.humidite_air_min <= valeurs["Humidité air"] <= serre.humidite_air_max),
+        "CO2": not (serre.co2_min <= valeurs["CO2"] <= serre.co2_max),
+        "Luminosité": not (serre.luminosite_min <= valeurs["Luminosité"] <= serre.luminosite_max),
+    }
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+    return jsonify({"valeurs": valeurs, "alertes": alertes})
 
 
 @app.route('/accueil')
 def accueil():
     return render_template('accueil.html')
+
+@app.route('/rapport')
+def rapport():
+    return render_template('rapport.html')
 
 @app.route('/contact')
 def contact():
@@ -301,7 +306,8 @@ def serres():
                     'luminosite_min': int(request.form['luminosite_min']),
                     'luminosite_max': int(request.form['luminosite_max']),
                     'co2_min': float(request.form['co2_min']),
-                    'co2_max': float(request.form['co2_max'])
+                    'co2_max': float(request.form['co2_max']),
+                    'excel_path': request.form['excel_path']  # 👈 Ajout obligatoire ici
                 }
             except ValueError as e:
                 flash('Valeurs invalides dans le formulaire', 'error')
@@ -362,8 +368,10 @@ def get_serre(serre_id):
             'nom_serre': serre.nom_serre,
             'adresse': serre.adresse,
             'ville': serre.ville,
-            'superficie': float(serre.superficie)
+            'superficie': float(serre.superficie),
+            'excel_path': serre.excel_path
         })
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -385,6 +393,7 @@ def edit_serre(serre_id):
         serre.adresse = request.form['adresse']
         serre.ville = request.form['city']
         serre.superficie = float(request.form['superficie'])
+        serre.excel_path = request.form.get('excel_path', serre.excel_path)
 
         # Mise à jour seulement si les champs existent dans le formulaire
         serre.temperature_min = float(request.form.get('temperature_min', serre.temperature_min))
@@ -485,68 +494,48 @@ def security():
 
 # Variables globales pour stocker les données
 # Variables globales pour stocker les données - MODIFIÉ
-live_data = {
-    'temperature': {'percent': 0, 'value': 0},
-    'luminosite': {'percent': 0, 'value': 0},
-    'humidite_sol': {'percent': 0, 'value': 0},
-    'humidite_air': {'percent': 0, 'value': 0},
-    'co2': {'percent': 0, 'value': 0},
-    'arrosage': {'percent': 0, 'value': 0},
-    'fertilisation': {'percent': 0, 'value': 0},
-}
+# Après : dictionnaire avec id_serre comme clé
+live_data = {}
+
 
 # Lecture des données depuis le fichier Excel - MODIFIÉ
-def read_excel_data():
+def read_excel_data(path, serre=None):
     try:
-        print("Tentative de lecture du fichier Excel...")
-        df = pd.read_excel('data.xlsx', sheet_name='Feuil1')
+        print(f"Tentative de lecture du fichier Excel : {path}")
+        df = pd.read_excel(path, sheet_name='Feuil1')
         print("Fichier Excel lu avec succès. Colonnes disponibles:", df.columns.tolist())
 
         correspondances = {
-            'temperature': 'Température',
-            'luminosite': 'Luminosité',
-            'humidite_sol': 'Humidité du sol',
-            'humidite_air': "Humidité air",
-            'co2': 'CO2',
-            'arrosage': 'Arrosage',
-            'fertilisation': 'Fertilisation'
+            "temperature": "Température",
+            "humidite_sol": "Humidité du sol",
+            "humidite_air": "Humidité air",
+            "co2": "CO2",
+            "luminosite": "Luminosité",
+            "arrosage": "Arrosage",
+            "fertilisation": "Fertilisation"
         }
+
+        serre_data = {key: {'value': 0, 'percent': 0} for key in correspondances.keys()}
 
         for key, column_name in correspondances.items():
             if column_name in df.columns:
                 raw_value = df[column_name].iloc[-1]
                 value = float(raw_value)
-
-                if key == 'temperature':
-                    value = value / 100
-                elif key in ['humidite_sol', 'humidite_air']:
-                    value = value / 100
-
-                live_data[key]['value'] = value
-                live_data[key]['percent'] = value
+                serre_data[key]['value'] = value
+                serre_data[key]['percent'] = value
 
                 print(f"{key}: {value} (valeur brute: {raw_value})")
-            else:
-                print(f"⚠️ Colonne manquante: {column_name}")
 
-    except Exception as e:
-        print(f"❌ Erreur lors de la lecture du fichier Excel: {str(e)}")
-        traceback.print_exc()
-        return  # Stop here in case of read error
-
-    # Après avoir mis à jour live_data
-    valeurs = {
-        "Température": live_data['temperature']['value'],
-        "Humidité du sol": live_data['humidite_sol']['value'],
-        "Humidité air": live_data['humidite_air']['value'],
-        "CO2": live_data['co2']['value'],
-        "Luminosité": live_data['luminosite']['value']
-    }
-
-    # Récupérer la serre de l'utilisateur actif si connecté
-    if 'user_id' in session:
-        serre = Serre.query.filter_by(id_user=session['user_id']).first()
+        # Gestion des notifications
         if serre:
+            valeurs = {
+                "Température": serre_data['temperature']['value'],
+                "Humidité du sol": serre_data['humidite_sol']['value'],
+                "Humidité air": serre_data['humidite_air']['value'],
+                "CO2": serre_data['co2']['value'],
+                "Luminosité": serre_data['luminosite']['value']
+            }
+
             user_id = serre.id_user
             serre_id = serre.id_serre
 
@@ -556,6 +545,13 @@ def read_excel_data():
             manage_notification(user_id, serre_id, "CO2", valeurs["CO2"], serre.co2_min, serre.co2_max)
             manage_notification(user_id, serre_id, "Luminosité", valeurs["Luminosité"], serre.luminosite_min, serre.luminosite_max)
 
+        return serre_data
+
+    except Exception as e:
+        print(f"❌ Erreur lors de la lecture du fichier Excel: {str(e)}")
+        traceback.print_exc()
+        return None
+
 # Route de base pour le dashboard - MODIFIÉ
 @app.route('/dashboard')
 def dashboard():
@@ -563,62 +559,111 @@ def dashboard():
         flash('Veuillez vous connecter', 'error')
         return redirect(url_for('auth'))
 
-    # Lis les données depuis Excel au moment où la page est chargée
-    read_excel_data()
-
-    serre = Serre.query.filter_by(id_user=session['user_id']).first()
-    if not serre:
+    # Récupérer toutes les serres de l'utilisateur
+    serres = Serre.query.filter_by(id_user=session['user_id']).all()
+    if not serres:
         flash('Aucune serre trouvée', 'error')
         return redirect(url_for('serres'))
 
-    # Initialisation des alertes
+    # Récupérer l'ID de la serre sélectionnée depuis l'URL (GET ?serre_id=...)
+    selected_id = request.args.get('serre_id', type=int)
+    selected_serre = next((s for s in serres if s.id_serre == selected_id), serres[0])
+
+    # Lecture du fichier Excel de cette serre et mise à jour du live_data spécifique
+    data = read_excel_data(selected_serre.excel_path, selected_serre)
+    if data:
+        live_data[selected_serre.id_serre] = data
+
+    # Récupérer les données de cette serre uniquement
+    serre_data = live_data.get(selected_serre.id_serre, {
+        'temperature': {'value': 0},
+        'humidite_air': {'value': 0},
+        'humidite_sol': {'value': 0},
+        'luminosite': {'value': 0},
+        'co2': {'value': 0},
+        'arrosage': {'value': 0},
+        'fertilisation': {'value': 0},
+    })
+
+    # Détection des alertes
     alertes = {
-        'temperature': False,
-        'humidite_air': False,
-        'humidite_sol': False,
-        'luminosite': False,
-        'co2': False
+        'temperature': not (selected_serre.temperature_min <= serre_data['temperature']['value'] <= selected_serre.temperature_max),
+        'humidite_air': not (selected_serre.humidite_air_min <= serre_data['humidite_air']['value'] <= selected_serre.humidite_air_max),
+        'humidite_sol': not (selected_serre.humidite_sol_min <= serre_data['humidite_sol']['value'] <= selected_serre.humidite_sol_max),
+        'luminosite': not (selected_serre.luminosite_min <= serre_data['luminosite']['value'] <= selected_serre.luminosite_max),
+        'co2': not (selected_serre.co2_min <= serre_data['co2']['value'] <= selected_serre.co2_max)
     }
 
-    # Vérification des seuils seulement si les valeurs existent
-    if 'value' in live_data['temperature']:
-        alertes['temperature'] = (live_data['temperature']['value'] < serre.temperature_min or 
-                                live_data['temperature']['value'] > serre.temperature_max)
-    
-    if 'value' in live_data['humidite_air']:
-        alertes['humidite_air'] = (live_data['humidite_air']['value'] < serre.humidite_air_min or 
-                                  live_data['humidite_air']['value'] > serre.humidite_air_max)
-    
-    if 'value' in live_data['humidite_sol']:
-        alertes['humidite_sol'] = (live_data['humidite_sol']['value'] < serre.humidite_sol_min or 
-                                  live_data['humidite_sol']['value'] > serre.humidite_sol_max)
-    
-    if 'value' in live_data['luminosite']:
-        alertes['luminosite'] = (live_data['luminosite']['value'] < serre.luminosite_min or 
-                                 live_data['luminosite']['value'] > serre.luminosite_max)
-    
-    if 'value' in live_data['co2']:
-        alertes['co2'] = (live_data['co2']['value'] < serre.co2_min or 
-                          live_data['co2']['value'] > serre.co2_max)
+    return render_template(
+        'dashboard.html',
+        serres=serres,
+        selected_serre=selected_serre,
+        live_data=serre_data,
+        alertes=alertes
+    )
 
-    return render_template('dashboard.html', 
-                         live_data=live_data, 
-                         alertes=alertes,
-                         serre=serre)
+
+def insert_data_into_db(serre_id):
+    try:
+        now = datetime.utcnow()
+
+        # Utilise les données spécifiques à cette serre
+        data = live_data.get(serre_id, {})
+
+        historique = {
+            'id_serre': serre_id,
+            'temperature': data.get('temperature', {}).get('value', 0),
+            'humidite_sol': data.get('humidite_sol', {}).get('value', 0),
+            'humidite_air': data.get('humidite_air', {}).get('value', 0),
+            'co2': data.get('co2', {}).get('value', 0),
+            'luminosite': data.get('luminosite', {}).get('value', 0),
+            'arrosage': data.get('arrosage', {}).get('value', 0),
+            'fertilisation': data.get('fertilisation', {}).get('value', 0),
+            'timestamp': now
+        }
+
+        # Insertion dans la base
+        with engine.begin() as conn:
+            conn.execute(text("""
+                INSERT INTO Historique (
+                    id_serre, temperature, humidite_sol, humidite_air,
+                    co2, luminosite, arrosage, fertilisation, timestamp
+                ) VALUES (
+                    :id_serre, :temperature, :humidite_sol, :humidite_air,
+                    :co2, :luminosite, :arrosage, :fertilisation, :timestamp
+                )
+            """), historique)
+
+        print(f"✅ Données live insérées dans Historique pour serre {serre_id} à {now}")
+
+    except Exception as e:
+        print(f"❌ Erreur insert_data_into_db : {e}")
 
 # Fonction pour simuler l'actualisation des données - MODIFIÉ
-def update_data():
-    with app.app_context():
-        while True:
-            try:
-                read_excel_data()  # Met à jour les données à partir du fichier Excel
+def update_data(serre_id, excel_path, serre):
+    with app.app_context():  # Activer le contexte Flask manuellement
+        try:
+            print(f"📥 Mise à jour des données pour la serre {serre_id} à partir de {excel_path}")
+            data = read_excel_data(excel_path, serre)
+            if data:
+                live_data[serre_id] = data
+            insert_data_into_db(serre_id)
+        except Exception as e:
+            print(f"[{serre_id}] ❌ Erreur dans update_data: {e}")
 
-                time.sleep(5)  # Attends 5 secondes avant de mettre à jour à nouveau
-            except Exception as e:
-                print(f"Erreur dans update_data: {str(e)}")
-                time.sleep(5)
+
+
+from datetime import datetime, timezone
 
 def manage_notification(user_id, serre_id, param, value, min_val, max_val):
+    min_val = float(min_val)
+    max_val = float(max_val)
+
+    # Protection contre division par zéro
+    if max_val == min_val:
+        print(f"⚠️ Impossible de calculer le pourcentage pour {param} car max == min ({max_val})")
+        return
+
     seuil = None
     if value < min_val:
         seuil = "min"
@@ -627,9 +672,7 @@ def manage_notification(user_id, serre_id, param, value, min_val, max_val):
 
     if seuil:
         # Calcul du pourcentage de dépassement
-        percent = 0
-        if max_val != min_val:
-            percent = (value - min_val) / (max_val - min_val) * 100
+        percent = (value - min_val) / (max_val - min_val) * 100
 
         # Enregistrement ou mise à jour dans DernieresAlertes (lié à la serre)
         existing_alert = DerniereAlerte.query.filter_by(serre_id=serre_id, type=param).first()
@@ -638,7 +681,7 @@ def manage_notification(user_id, serre_id, param, value, min_val, max_val):
             existing_alert.pourcentage = percent
             existing_alert.seuil_min = min_val
             existing_alert.seuil_max = max_val
-            existing_alert.timestamp = datetime.utcnow()
+            existing_alert.timestamp = datetime.now(timezone.utc)
         else:
             new_alert = DerniereAlerte(
                 serre_id=serre_id,
@@ -646,7 +689,8 @@ def manage_notification(user_id, serre_id, param, value, min_val, max_val):
                 valeur=value,
                 pourcentage=percent,
                 seuil_min=min_val,
-                seuil_max=max_val
+                seuil_max=max_val,
+                timestamp=datetime.now(timezone.utc)
             )
             db.session.add(new_alert)
 
@@ -724,27 +768,25 @@ def before_first_request():
 def handle_connect():
     print("Client connecté")
 
-# Événement de changement de fichier (Watchdog)
 class Watcher(FileSystemEventHandler):
     def on_modified(self, event):
-        if event.src_path == "data.xlsx":  # Chemin vers ton fichier Excel
-            read_excel_data()  # Réactualiser les données quand le fichier est modifié
-            
+        path_modifie = event.src_path
+        print(f"🟡 Fichier modifié : {path_modifie}")
 
+        # On cherche la serre correspondant à ce path
+        with app.app_context():
+            serres = Serre.query.all()
+            for serre in serres:
+                if path_modifie == serre.excel_path:
+                    print(f"🔁 Mise à jour pour serre {serre.nom_serre}")
+                    update_data(serre.id_serre, serre.excel_path, serre)
+            
 def start_watcher():
     event_handler = Watcher()
     observer = Observer()
     observer.schedule(event_handler, path='.', recursive=False)
     observer.start()
 
-@app.before_request
-def before_request():
-    global initialized
-    if not initialized:
-        thread = threading.Thread(target=update_data)
-        thread.daemon = True  # Ce thread se termine quand l'application se ferme
-        thread.start()
-        initialized = True
 
 @app.route('/notifications')
 def get_notifications():
@@ -804,7 +846,13 @@ def historique_serre():
 
 def insert_aggregated_data(serre_id):
     try:
-        df = pd.read_excel(EXCEL_FILE)
+        serre = Serre.query.get(serre_id)
+        if not serre:
+            print(f"Serre introuvable pour id {serre_id}")
+            return
+
+        df = pd.read_excel(serre.excel_path)
+
         df["timestamp"] = pd.to_datetime(df["Horaire"])
         df.set_index("timestamp", inplace=True)
 
@@ -865,7 +913,7 @@ def insert_aggregated_data(serre_id):
     except Exception as e:
         print(f"Erreur lors de l'exécution SQL : {e}")
 
-def schedule_insert(serre_id, interval=4*60*60):
+def schedule_insert(serre_id, interval=2*60):
     def run():
         while True:
             try:
@@ -933,9 +981,14 @@ if __name__ == "__main__":
     threading.Thread(target=start_watcher, daemon=True).start()
 
     with app.app_context():
-        serres = Serre.query.all()  # ou filter_by(actif=True) si tu filtres
+        serres = Serre.query.all()
         for serre in serres:
             schedule_insert(serre.id_serre)
+            threading.Thread(
+                target=update_data,
+                args=(serre.id_serre, serre.excel_path, serre),
+                daemon=True
+            ).start()
 
     app.run(debug=True)
 

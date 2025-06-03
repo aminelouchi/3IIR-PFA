@@ -84,6 +84,7 @@ document.querySelectorAll('.btn-edit').forEach(button => {
                 document.getElementById('editAdresse').value = data.adresse;
                 document.getElementById('editCity').value = data.ville;
                 document.getElementById('editSuperficie').value = data.superficie;
+                document.getElementById('editExcelPath').value = data.excel_path;
 
                 // Afficher le modal d'édition
                 document.getElementById('editModal').style.display = 'block';

@@ -47,7 +47,7 @@
               </a>
             </li>
             <li class="nav-list-item">
-              <a class="nav-list-link" href="#">
+              <a class="nav-list-link" href="{{ url_for('rapport') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
                 Rapport
               </a>
@@ -61,7 +61,20 @@
           </ul>
         </div>
         <div class="app-main">
+          <form method="get" action="/dashboard" class="select-serre-form">
+              <label for="serre_id">Choisir une serre</label>
+              <select id="serre-select" onchange="changerSerre(this.value)">
+              {% for serre in serres %}
+                <option value="{{ serre.id_serre }}" {% if serre.id_serre == selected_serre.id_serre %}selected{% endif %}>
+                  {{ serre.nom_serre }}
+                </option>
+              {% endfor %}
+            </select>
+            </form>
           <div class="main-header-line">
+
+            
+
             <h1>Applications Dashboard</h1>
             <div class="action-buttons">
               <button class="open-right-area">
@@ -72,6 +85,11 @@
             </button>
             </div>
           </div>
+
+          
+
+<input type="hidden" id="selected-serre-id" value="{{ selected_serre.id_serre }}">
+
           <h2 class="live-title">Serre en direct <span class="live-dot"></span> </h2>
           <div class="chart-row three">
 
@@ -194,9 +212,7 @@
                 <th style="padding: 10px; border: 1px solid rgba(255,255,255,0.2);">Fertilisation</th>
               </tr>
             </thead>
-            <tbody id="historique-body">
-                <!-- Rempli dynamiquement -->
-            </tbody>
+            <tbody id="historique-body"></tbody>
           </table>
         </div>
 
@@ -435,6 +451,8 @@
           </div>
         </div>
       </div>
+    </div>
+    </div>
     </div>
         
       <script src="../static/js/dashboard.js"></script>

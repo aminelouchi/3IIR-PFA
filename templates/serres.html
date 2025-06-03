@@ -71,6 +71,7 @@
                         <th>Ville</th>
                         <th>Superficie (m²)</th>
                         <th>Adresse</th> 
+                        <th>Fichier Excel</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -81,13 +82,15 @@
                         <td>{{ serre.ville }}</td>
                         <td>{{ serre.superficie }}</td>
                         <td>{{ serre.adresse }}</td>
+                        <td><a href="{{ serre.excel_path }}" target="_blank">{{ serre.excel_path }}</a></td>
                         <td class="actions">
                             <button class="btn-edit" data-id="{{ serre.id_serre }}">Modifier</button>
                             <button class="btn-delete" data-id="{{ serre.id_serre }}">Supprimer</button>
                         </td>
                     </tr>
                     {% endfor %}
-                  </tbody>          
+                </tbody>
+
             </table>
         </div>
         
@@ -123,7 +126,12 @@
                             <input type="number" step="0.01" id="superficie" name="superficie" required />
                             <p class="error" id="superficieError">Veuillez entrer une superficie valide.</p>
                         </div>
-                        
+
+                        <div class="form-group">
+                          <label>Chemin du fichier Excel</label>
+                          <input type="text" name="excel_path" placeholder="ex: data/excel_serre1.xlsx" required />
+                        </div>
+
                         <!-- Section des seuils -->
                         <div class="seuils-container">
                             <h3>Paramètres environnementaux</h3>
@@ -221,6 +229,12 @@
             <label>Superficie (m²)</label>
             <input type="number" step="0.01" id="editSuperficie" name="superficie" required />
           </div>
+
+          <div class="form-group">
+            <label>Chemin du fichier Excel</label>
+            <input type="text" id="editExcelPath" name="excel_path" required />
+          </div>
+
         </form>
       </div>
       <div class="modal-footer">

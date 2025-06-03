@@ -1,5 +1,6 @@
 function fetchLiveData() {
-    fetch("/latest_data")
+    const serreId = document.getElementById("selected-serre-id")?.value;
+    fetch(`/latest_data?serre_id=${serreId}`)
         .then(response => response.json())
         .then(data => {
             if (!data || data.error) {
@@ -10,7 +11,6 @@ function fetchLiveData() {
             const valeurs = data.valeurs;
             const alertes = data.alertes;
 
-            // Mise à jour des valeurs
             document.getElementById('temperature-value').textContent = valeurs["Température"];
             document.getElementById('luminosite-value').textContent = valeurs["Luminosité"];
             document.getElementById('humidite_sol-value').textContent = valeurs["Humidité du sol"];
@@ -19,7 +19,6 @@ function fetchLiveData() {
             document.getElementById('arrosage-value').textContent = valeurs["Arrosage"];
             document.getElementById('fertilisation-value').textContent = valeurs["Fertilisation"];
 
-            // Gestion des alertes visuelles (clignotement)
             toggleAlert('temperature', alertes["Température"]);
             toggleAlert('luminosite', alertes["Luminosité"]);
             toggleAlert('humidite_sol', alertes["Humidité du sol"]);
@@ -30,6 +29,13 @@ function fetchLiveData() {
             console.error("Erreur lors du fetch /latest_data :", err);
         });
 }
+
+function changerSerre(serreId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('serre_id', serreId);
+    window.location.href = url.toString(); // recharge avec ?serre_id=X
+}
+
 
 function toggleAlert(id, isAlerting) {
     const container = document.getElementById(id);

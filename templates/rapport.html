@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport des Serres</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/rapport.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-left">
+          <button class="close-menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="app-logo">
+            <svg href="./images/MOI.jpg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>       </svg>
+            <span>Louchi Haddaq</span>
+          </div>
+          <ul class="nav-list">
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="{{ url_for('dashboard') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-columns"><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"/></svg>
+                Tableau de bord
+              </a>
+            </li>
+            <li class="nav-list-item active">
+              <a class="nav-list-link" href="{{ url_for('profil') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Profil
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="{{ url_for('security') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                Sécurité
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="{{ url_for('serres') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Mes serres
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                Rapport
+              </a>
+            </li>
+            <li class="nav-list-item">
+              <a class="nav-list-link" href="{{ url_for('auth') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Déconnexion
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="app-main">
+    <div class="container">
+        <div class="row">
+                <h2 style="color: aliceblue;">Génération de Rapport</h2>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Sélection des Serres -->
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-seedling me-2"></i>Sélection des Serres
+                            </div>
+                            <div class="card-body">
+                                <div class="serre-item select-all">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                        <label class="form-check-label" for="selectAll">
+                                            Toutes les serres
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div id="serresList">
+                                    <div class="serre-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input serre-checkbox" type="checkbox" id="serre1" value="1">
+                                            <label class="form-check-label" for="serre1">
+                                                Serre Principale (ID: 1)
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="serre-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input serre-checkbox" type="checkbox" id="serre2" value="2">
+                                            <label class="form-check-label" for="serre2">
+                                                Serre Secondaire (ID: 2)
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="serre-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input serre-checkbox" type="checkbox" id="serre3" value="3">
+                                            <label class="form-check-label" for="serre3">
+                                                Serre Expérimentale (ID: 3)
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="serre-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input serre-checkbox" type="checkbox" id="serre4" value="4">
+                                            <label class="form-check-label" for="serre4">
+                                                Serre de Production (ID: 4)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Période du Rapport -->
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-alt me-2"></i>Période du Rapport
+                            </div>
+                            <div class="card-body">
+                                <div class="date-picker-container">
+                                    <div class="date-picker-item">
+                                        <label for="startDate" class="form-label">Date de début</label>
+                                        <input type="text" class="form-control datepicker" id="startDate" placeholder="Sélectionnez une date">
+                                    </div>
+                                    <div class="date-picker-item">
+                                        <label for="endDate" class="form-label">Date de fin</label>
+                                        <input type="text" class="form-control datepicker" id="endDate" placeholder="Sélectionnez une date">
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" id="lastWeek">Semaine dernière</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm ms-2" id="lastMonth">Mois dernier</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm ms-2" id="lastYear">Année dernière</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm ms-2" id="allTime">Toute période</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <!-- Options du Rapport -->
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-cog me-2"></i>Options du Rapport
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="selectAllOptions">
+                                    <label class="form-check-label" for="selectAllOptions">
+                                        Tout sélectionner
+                                    </label>
+                                </div>
+                                
+                                <div class="report-option">
+                                    <div class="form-check">
+                                        <input class="form-check-input report-option-checkbox" type="checkbox" id="optionHistory" checked>
+                                        <label class="form-check-label" for="optionHistory">
+                                            Historique des données
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Affiche l'évolution des paramètres dans le temps</small>
+                                </div>
+                                
+                                <div class="report-option">
+                                    <div class="form-check">
+                                        <input class="form-check-input report-option-checkbox" type="checkbox" id="optionAlerts" checked>
+                                        <label class="form-check-label" for="optionAlerts">
+                                            Alertes et notifications
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Liste des alertes générées pendant la période</small>
+                                </div>
+                                
+                                <div class="report-option">
+                                    <div class="form-check">
+                                        <input class="form-check-input report-option-checkbox" type="checkbox" id="optionAverages" checked>
+                                        <label class="form-check-label" for="optionAverages">
+                                            Moyennes et statistiques
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Calcul des moyennes, min, max pour chaque paramètre</small>
+                                </div>
+                                
+                                <div class="report-option">
+                                    <div class="form-check">
+                                        <input class="form-check-input report-option-checkbox" type="checkbox" id="optionGraphs" checked>
+                                        <label class="form-check-label" for="optionGraphs">
+                                            Graphiques
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Représentation visuelle des données</small>
+                                </div>
+                                
+                                <div class="report-option">
+                                    <div class="form-check">
+                                        <input class="form-check-input report-option-checkbox" type="checkbox" id="optionRecommendations">
+                                        <label class="form-check-label" for="optionRecommendations">
+                                            Recommandations
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Suggestions d'amélioration basées sur les données</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Format du Rapport -->
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-file-pdf me-2"></i>Format du Rapport
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="reportTitle" class="form-label">Titre du rapport</label>
+                                    <input type="text" class="form-control" id="reportTitle" value="Rapport des Serres">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="reportTheme" class="form-label">Thème visuel</label>
+                                    <select class="form-select" id="reportTheme">
+                                        <option value="default">Classique</option>
+                                        <option value="modern">Moderne</option>
+                                        <option value="green">Vert (Nature)</option>
+                                        <option value="professional">Professionnel</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="includeLogo" checked>
+                                    <label class="form-check-label" for="includeLogo">
+                                        Inclure le logo
+                                    </label>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" id="generateReport">
+                                        <i class="fas fa-file-pdf me-2"></i>Générer le PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aperçu du Rapport</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center py-4" id="pdfLoading">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Génération du PDF en cours...</p>
+                    </div>
+                    <iframe id="pdfPreview" style="width: 100%; height: 600px; display: none; border: none;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" id="printPdf">
+                        <i class="fas fa-print me-2"></i>Imprimer
+                    </button>
+                    <button type="button" class="btn btn-success" id="downloadPdf">
+                        <i class="fas fa-download me-2"></i>Télécharger
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../static/js/rapport.js"></script>
+</body>
+</html>
